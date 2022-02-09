@@ -1,4 +1,4 @@
-from game.die import Die
+from game.die import Card
 
 
 class Director:
@@ -19,14 +19,13 @@ class Director:
         Args:
             self (Director): an instance of Director.
         """
-        self.dice = []
+        self.current_card = 0
         self.is_playing = True
-        self.score = 0
-        self.total_score = 0
+        self.total_score = 300
 
-        for i in range(5):
-            die = Die()
-            self.dice.append(die)
+        # for i in range(5):
+        #     die = Die()
+        #     self.dice.append(die)
 
     def start_game(self):
         """Starts the game by running the main game loop.
@@ -35,19 +34,17 @@ class Director:
             self (Director): an instance of Director.
         """
         while self.is_playing:
-            self.get_inputs()
+            self.show_card()
             self.do_updates()
             self.do_outputs()
+            self.get_inputs()
 
-    def get_inputs(self):
-        """Ask the user if they want to roll.
-
-        Args:
-            self (Director): An instance of Director.
-        """
-        roll_dice = input("Roll dice? [y/n] ")
-        self.is_playing = (roll_dice == "y")
-       
+    def show_card(self):
+        if not self.is_playing:
+            return 
+        card = self.card 
+        print(f"The card is: {card.value}")
+        
     def do_updates(self):
         """Updates the player's score.
 
@@ -56,12 +53,10 @@ class Director:
         """
         if not self.is_playing:
             return 
-
-        for i in range(len(self.dice)):
-            die = self.dice[i]
-            die.roll()
-            self.score += die.points 
-        self.total_score += self.score
+        guess = input('Higher or lower? (h/l): ')
+        card = self.card
+        card.reveal()
+        self.total_score += card.points
 
     def do_outputs(self):
         """Displays the dice and the score. Also asks the player if they want to roll again. 
@@ -72,11 +67,24 @@ class Director:
         if not self.is_playing:
             return
         
-        values = ""
-        for i in range(len(self.dice)):
-            die = self.dice[i]
-            values += f"{die.value} "
+        # values = ""
+        # for i in range(len(self.dice)):
+        #     die = self.dice
+        #     values += f"{die.value} "
 
-        print(f"You rolled: {values}")
+        # print(f"You rolled: {values}")
+        print(f"Next card was:{current_card}\n")
         print(f"Your score is: {self.total_score}\n")
         self.is_playing == (self.score > 0)
+
+    def get_inputs(self):
+        """Ask the user if they want to roll.
+
+        Args:
+            self (Director): An instance of Director.
+        """
+        play_again = input("Play again? [y/n] ")
+        self.is_playing = (play_again == "y")
+
+
+
