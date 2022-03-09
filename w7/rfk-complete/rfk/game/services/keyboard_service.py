@@ -1,5 +1,4 @@
 import pyray
-from raylib import KEY_A, KEY_D
 from game.shared.point import Point
 
 
@@ -27,14 +26,15 @@ class KeyboardService:
         Returns:
             Point: The selected direction.
         """
+        
         dx = 0
         dy = 0
 
-        if pyray.is_key_down(pyray.KEY_LEFT or KEY_A):
-            dx = -2
+        if pyray.is_key_down(pyray.KEY_LEFT):
+            dx = -1
         
-        if pyray.is_key_down(pyray.KEY_RIGHT or KEY_D):
-            dx = 2
+        if pyray.is_key_down(pyray.KEY_RIGHT):
+            dx = 1
         
         if pyray.is_key_down(pyray.KEY_UP):
             dy = 0

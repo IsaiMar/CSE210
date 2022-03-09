@@ -1,3 +1,28 @@
+import os
+import random
+
+from game.casting.actor import Actor
+from game.casting.artifact import Artifact
+from game.casting.cast import Cast
+
+from game.services.keyboard_service import KeyboardService
+from game.services.video_service import VideoService
+
+from game.shared.color import Color
+from game.shared.point import Point
+
+FRAME_RATE = 12
+MAX_X = 900
+MAX_Y = 600
+CELL_SIZE = 15
+FONT_SIZE = 20
+COLS = 60
+ROWS = 40
+CAPTION = "Greed"
+WHITE = Color(255, 255, 255)
+DEFAULT_ARTIFACTS = 40
+
+
 class Director:
     """A person who directs the game. 
     
@@ -17,6 +42,7 @@ class Director:
         """
         self._keyboard_service = keyboard_service
         self._video_service = video_service
+        self.score = 0
         
     def start_game(self, cast):
         """Starts the game using the given cast. Runs the main game loop.
@@ -51,16 +77,51 @@ class Director:
         robot = cast.get_first_actor("robots")
         artifacts = cast.get_actors("artifacts")
 
-        banner.set_text("")
+        banner.set_text(f"Score: {self.score}")
         max_x = self._video_service.get_width()
         max_y = self._video_service.get_height()
         robot.move_next(max_x, max_y)
         
+        rock_or_gem = ['*', chr(48)]
+ 
+        for n in range(1):
+            if len(cast._actors) < 50:
+                text = random.choice(rock_or_gem)
+
+                x = random.randint(1, COLS - 1)
+                y = random.randint(1, 1)
+                position = Point(x, y)
+                position = position.scale(CELL_SIZE)
+
+
+                r = random.randint(0, 255)
+                g = random.randint(0, 255)
+                b = random.randint(0, 255)
+                color = Color(r, g, b)
+            
+                artifact = Artifact()
+                artifact.set_text(text)
+                artifact.set_font_size(FONT_SIZE)
+                artifact.set_color(color)
+                artifact.set_position(position)
+                cast.add_actor("artifacts", artifact)
+
+
+
         for artifact in artifacts:
-            if robot.get_position().equals(artifact.get_position()):
-                message = artifact.get_message()
-                banner.set_text(message)    
-        
+
+            artifact.move_next(max_x, max_y)
+
+            if robot.get_position().equals(artifact.get_position()) and artifact.get_text() == '*':
+
+                self.score += 1
+                cast.remove_actor("artifacts", artifact)
+
+            elif robot.get_position().equals(artifact.get_position()) and artifact.get_text() == chr(48):
+
+                self.score -= 1
+                cast.remove_actor("artifacts", artifact)
+
     def _do_outputs(self, cast):
         """Draws the actors on the screen.
         
